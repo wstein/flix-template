@@ -97,11 +97,15 @@ branch — the digest in a re-pinned lock is computed by the runner, and that is
 the thing worth reading before merging.
 
 `.github/workflows/docs.yaml` runs `./flixw doc` on every push to `main` and
-publishes `build/doc/` to GitHub Pages, so the rendered standard library matches
-the pinned compiler rather than whatever `api.flix.dev` currently serves. Pages
-is enabled automatically on the first run. Where it is unavailable — a private
-repository on a free plan, say — the documentation is still built and the run
-warns instead of failing.
+publishes `build/doc/` to GitHub Pages — for this repository, at
+<https://wstein.github.io/flix-template/>. The rendered standard library then
+matches the pinned compiler rather than whatever `api.flix.dev` currently
+serves.
+
+Pages has to be enabled once, under **Settings → Pages** with source
+**GitHub Actions**: the default `GITHUB_TOKEN` cannot create a Pages site even
+with `pages: write`. Until it is, the documentation is still built and the run
+warns rather than failing, so a fresh copy of this template does not start red.
 
 ## After you template this
 
@@ -109,9 +113,12 @@ warns instead of failing.
    name is yours to choose; nothing requires it to match the repository name.
 2. `LICENSE` — replace the copyright line, or the whole license.
 3. `src/` and `test/` — replace the greeting with your own code.
-4. This README, including the badge URLs — until you point them at your own
-   repository they report this one's state, not yours. CI fails on the first
-   push until you do, and names every URL still pointing here.
+4. This README — the badge URLs and the documentation link. Until you point
+   them at your own repository they report this one's state, not yours. CI
+   fails on the first push until you do, and names every URL still pointing
+   here.
+5. **Settings → Pages**, source **GitHub Actions**, if you want the published
+   documentation. Skip it and `docs.yaml` just warns.
 
 The Flix and `flixw` badges read `.flixw/lock.toml` directly, so re-pinning with
 `./flixw pin <version>` updates them without touching this file.

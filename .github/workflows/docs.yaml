@@ -57,9 +57,12 @@ jobs:
       - name: Generate
         run: ./flixw doc
 
-      # enablement turns Pages on for a repository that has never used it, so a
-      # fresh copy of this template needs no manual step. It fails where Pages
-      # is unavailable, and that is not a reason to fail the run.
+      # enablement is kept because it costs nothing where an organisation does
+      # grant the Actions token that permission -- but do not count on it: the
+      # default GITHUB_TOKEN cannot create a Pages site even with pages:write,
+      # and fails here with "Resource not accessible by integration". Pages
+      # normally has to be turned on once by hand. Either way that is not a
+      # reason to fail the run, so the failure is caught and reported below.
       - name: Configure Pages
         id: pages
         uses: actions/configure-pages@45bfe0192ca1faeb007ade9deae92b16b8254a0d # v6.0.0
@@ -70,7 +73,7 @@ jobs:
       - name: Report that publishing was skipped
         if: steps.pages.outcome != 'success'
         # A workflow command has to be one line; it is long rather than wrapped.
-        run: echo "::warning::GitHub Pages is unavailable for this repository, so the documentation was built but not published. Enable it under Settings > Pages, or delete .github/workflows/docs.yaml."
+        run: echo "::warning::Pages is not enabled for this repository, so the documentation was built but not published. Turn it on once under Settings > Pages with source 'GitHub Actions', or delete .github/workflows/docs.yaml."
 
       - name: Upload
         if: steps.pages.outcome == 'success'

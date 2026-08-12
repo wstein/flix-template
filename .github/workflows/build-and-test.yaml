@@ -122,14 +122,19 @@ jobs:
                 sed -E 's#^raw\.githubusercontent\.com/##; s#/$##' || true
               grep -oE 'shields\.io/github/[a-z-]+/[A-Za-z0-9_.-]+/[A-Za-z0-9_.-]+' <<<"$normalised" |
                 sed -E 's#^shields\.io/github/[a-z-]+/##' || true
+              grep -oE '[A-Za-z0-9-]+\.github\.io/[A-Za-z0-9_.-]+' <<<"$normalised" |
+                sed -E 's#^([A-Za-z0-9-]+)\.github\.io/#\1/#' || true
             } | sort -u
           )
           [ -n "$refs" ] || exit 0
 
-          stale=$(grep -vxF "$REPO" <<<"$refs" || true)
+          # Case-insensitively: a Pages host is always lowercase, while
+          # github.repository carries the owner's canonical capitalisation, and
+          # the two differing is not a stale URL.
+          stale=$(grep -vixF "$REPO" <<<"$refs" || true)
           [ -n "$stale" ] || exit 0
 
-          echo "::error file=README.md::badge URLs name a repository other than $REPO"
+          echo "::error file=README.md::URLs name a repository other than $REPO"
           while IFS= read -r ref; do
             echo "  $ref  ->  $REPO"
           done <<<"$stale"
