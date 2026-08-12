@@ -1,10 +1,10 @@
-# flix-hello
+# flix-template
 
-[![Build and Test](https://github.com/wstein/flix-hello/actions/workflows/build-and-test.yaml/badge.svg)](https://github.com/wstein/flix-hello/actions/workflows/build-and-test.yaml)
-[![Flix](https://img.shields.io/badge/dynamic/toml?url=https%3A%2F%2Fraw.githubusercontent.com%2Fwstein%2Fflix-hello%2Fmain%2F.flixw%2Flock.toml&query=%24.compiler.version&label=flix&color=blue)](.flixw/lock.toml)
-[![flixw](https://img.shields.io/badge/dynamic/toml?url=https%3A%2F%2Fraw.githubusercontent.com%2Fwstein%2Fflix-hello%2Fmain%2F.flixw%2Flock.toml&query=%24.wrapperVersion&label=flixw&color=blue)](https://github.com/wstein/flixw)
+[![Build and Test](https://github.com/wstein/flix-template/actions/workflows/build-and-test.yaml/badge.svg)](https://github.com/wstein/flix-template/actions/workflows/build-and-test.yaml)
+[![Flix](https://img.shields.io/badge/dynamic/toml?url=https%3A%2F%2Fraw.githubusercontent.com%2Fwstein%2Fflix-template%2Fmain%2F.flixw%2Flock.toml&query=%24.compiler.version&label=flix&color=blue)](.flixw/lock.toml)
+[![flixw](https://img.shields.io/badge/dynamic/toml?url=https%3A%2F%2Fraw.githubusercontent.com%2Fwstein%2Fflix-template%2Fmain%2F.flixw%2Flock.toml&query=%24.wrapperVersion&label=flixw&color=blue)](https://github.com/wstein/flixw)
 [![Java](https://img.shields.io/badge/java-21%2B-blue)](https://adoptium.net/temurin/releases/?version=21)
-[![License](https://img.shields.io/github/license/wstein/flix-hello?color=blue)](LICENSE)
+[![License](https://img.shields.io/github/license/wstein/flix-template?color=blue)](LICENSE)
 
 A GitHub template for starting a [Flix](https://flix.dev) project, and a
 worked example of [`flixw`](https://github.com/wstein/flixw) — a
@@ -87,11 +87,12 @@ mode, so run `./flixw format` before you commit.
 
 ## After you template this
 
-1. `flix.toml` — set `name`, `description`, `version` and `authors`.
+1. `flix.toml` — set `name`, `description`, `version` and `authors`. The package
+   name is yours to choose; nothing requires it to match the repository name.
 2. `LICENSE` — replace the copyright line, or the whole license.
 3. `src/` and `test/` — replace the greeting with your own code.
-4. This README, including the badge URLs — they name `wstein/flix-hello` and
-   will report this repository's state, not yours, until you change them.
+4. This README, including the badge URLs — until you point them at your own
+   repository they report this one's state, not yours.
 
 The Flix and `flixw` badges read `.flixw/lock.toml` directly, so re-pinning with
 `./flixw pin <version>` updates them without touching this file.

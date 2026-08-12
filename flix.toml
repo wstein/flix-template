@@ -1,5 +1,5 @@
 [package]
-name        = "flix-hello"
+name        = "flix-template"
 description = "A Flix project template that carries its own compiler via flixw"
 version     = "0.1.0"
 flix        = "0.75.2"
