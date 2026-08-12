@@ -109,6 +109,12 @@ own landing page listing them, and refuses to publish at all if that finds
 nothing. A link check then fails the build if anything published points at a
 page that was not.
 
+One upstream quirk is worked around there too. `flix doc` builds each `Source`
+link by appending the documented file's path to the standard library's own base
+URL on `flix/flix`, which for this project's files yields a 404 with the build
+machine's absolute path inside it. The workflow rewrites those into permalinks
+at the published commit, and fails if any filesystem path survives.
+
 Pages has to be enabled once, under **Settings → Pages** with source
 **GitHub Actions**: the default `GITHUB_TOKEN` cannot create a Pages site even
 with `pages: write`. Until it is, the documentation is still built and the run

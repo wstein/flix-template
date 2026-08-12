@@ -94,6 +94,28 @@ jobs:
           cp build/doc/styles.css build/doc/index.js build/doc/favicon.png site/
           while IFS= read -r p; do cp "build/doc/$p" "site/$p"; done <<<"$pages"
 
+          # Every definition gets a "Source" link, and flix doc builds it by
+          # appending the documented file's path to the standard library's own
+          # base URL on flix/flix. For a library file that is right; for this
+          # project's files it produces a 404 against flix/flix with the build
+          # machine's absolute path embedded in it. Rewrite those into
+          # permalinks at the commit being published.
+          #
+          # The workspace path goes into a regex, so its metacharacters are
+          # escaped -- a dot matching any character would be a silent near-miss.
+          escaped=$(printf '%s' "$PWD" | sed 's|[.[\*^$/]|\\&|g')
+          from="https://github.com/flix/flix/blob/master/main/src/library/$escaped/"
+          to="https://github.com/$GITHUB_REPOSITORY/blob/$GITHUB_SHA/"
+          while IFS= read -r p; do
+            sed "s|$from|$to|g" "site/$p" > "site/$p.tmp" && mv "site/$p.tmp" "site/$p"
+          done <<<"$pages"
+
+          # Fail closed: nothing published may still carry a filesystem path.
+          if grep -lF "$PWD" site/*.html; then
+            echo "::error::a published page still contains a build-machine path"
+            exit 1
+          fi
+
           # The landing page is generated rather than committed, so it lists
           # whatever modules the project actually has instead of a name that
           # would drift the first time someone renames one.
