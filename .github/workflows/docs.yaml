@@ -1,0 +1,98 @@
+name: Docs
+
+# `./flixw doc` renders this project and the standard library it was built
+# against, so the output matches the pinned compiler exactly rather than
+# whatever api.flix.dev currently serves.
+#
+# The documentation is built on every push to the default branch, which also
+# keeps `doc` itself from breaking unnoticed. Publishing is separate and
+# conditional: a repository made from this template may have Pages unavailable
+# -- private on a free plan, or disabled by policy -- and inheriting a workflow
+# that reddens the default branch on the first push is not a good welcome. When
+# Pages cannot be configured the build still runs and says so, loudly, once.
+
+on:
+  push:
+    branches: [main]
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: pages
+  cancel-in-progress: false
+
+jobs:
+  build:
+    name: Build the documentation
+    runs-on: ubuntu-latest
+
+    permissions:
+      contents: read
+      pages: write # configure-pages enables Pages through the API
+
+    outputs:
+      pages: ${{ steps.pages.outcome }}
+
+    steps:
+      - name: Check out
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+
+      - name: Install JDK 21
+        uses: actions/setup-java@b6effb05e454b25005698d916606bdc6ffcbf961 # v5.7.0
+        with:
+          distribution: temurin
+          java-version: '21'
+
+      - name: Restore the pinned compiler
+        uses: actions/cache@55cc8345863c7cc4c66a329aec7e433d2d1c52a9 # v6.1.0
+        with:
+          path: |
+            ~/.cache/flixw
+            ~/Library/Caches/flixw
+            ~\AppData\Local\flixw
+          key: ${{ runner.os }}-flixw-${{ hashFiles('.flixw/lock.toml') }}
+
+      - name: Generate
+        run: ./flixw doc
+
+      # enablement turns Pages on for a repository that has never used it, so a
+      # fresh copy of this template needs no manual step. It fails where Pages
+      # is unavailable, and that is not a reason to fail the run.
+      - name: Configure Pages
+        id: pages
+        uses: actions/configure-pages@45bfe0192ca1faeb007ade9deae92b16b8254a0d # v6.0.0
+        continue-on-error: true
+        with:
+          enablement: true
+
+      - name: Report that publishing was skipped
+        if: steps.pages.outcome != 'success'
+        # A workflow command has to be one line; it is long rather than wrapped.
+        run: echo "::warning::GitHub Pages is unavailable for this repository, so the documentation was built but not published. Enable it under Settings > Pages, or delete .github/workflows/docs.yaml."
+
+      - name: Upload
+        if: steps.pages.outcome == 'success'
+        uses: actions/upload-pages-artifact@fc324d3547104276b827a68afc52ff2a11cc49c9 # v5.0.0
+        with:
+          path: build/doc
+
+  deploy:
+    name: Publish to Pages
+    needs: build
+    if: needs.build.outputs.pages == 'success'
+    runs-on: ubuntu-latest
+
+    permissions:
+      pages: write
+      id-token: write
+
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+
+    steps:
+      - name: Deploy
+        id: deployment
+        uses: actions/deploy-pages@cd2ce8fcbc39b97be8ca5fce6e763baed58fa128 # v5.0.0

@@ -46,7 +46,8 @@ it outside the repository, and runs it. Later commands reuse the cache.
 ├── .github/
 │   ├── workflows/
 │   │   ├── build-and-test.yaml   validate, check and test, on three platforms
-│   │   └── update-flix.yaml      weekly: re-pin the compiler, open a pull request
+│   │   ├── update-flix.yaml      weekly: re-pin the compiler, open a pull request
+│   │   └── docs.yaml             build the API docs, publish them to Pages
 │   └── dependabot.yml            keeps the workflows' pinned action digests current
 ├── flix.toml                     package metadata and the lowest Flix version accepted
 ├── flixw                         the POSIX shim
@@ -94,6 +95,13 @@ the newest `flix/flix` release, re-pins, runs `validate`, `check` and `test`,
 and opens a pull request if all three pass. It never pushes to the default
 branch — the digest in a re-pinned lock is computed by the runner, and that is
 the thing worth reading before merging.
+
+`.github/workflows/docs.yaml` runs `./flixw doc` on every push to `main` and
+publishes `build/doc/` to GitHub Pages, so the rendered standard library matches
+the pinned compiler rather than whatever `api.flix.dev` currently serves. Pages
+is enabled automatically on the first run. Where it is unavailable — a private
+repository on a free plan, say — the documentation is still built and the run
+warns instead of failing.
 
 ## After you template this
 
