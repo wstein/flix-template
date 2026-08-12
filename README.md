@@ -92,7 +92,8 @@ mode, so run `./flixw format` before you commit.
 2. `LICENSE` — replace the copyright line, or the whole license.
 3. `src/` and `test/` — replace the greeting with your own code.
 4. This README, including the badge URLs — until you point them at your own
-   repository they report this one's state, not yours.
+   repository they report this one's state, not yours. CI fails on the first
+   push until you do, and names every URL still pointing here.
 
 The Flix and `flixw` badges read `.flixw/lock.toml` directly, so re-pinning with
 `./flixw pin <version>` updates them without touching this file.
