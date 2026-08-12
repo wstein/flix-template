@@ -1,5 +1,11 @@
 # flix-hello
 
+[![Build and Test](https://github.com/wstein/flix-hello/actions/workflows/build-and-test.yaml/badge.svg)](https://github.com/wstein/flix-hello/actions/workflows/build-and-test.yaml)
+[![Flix](https://img.shields.io/badge/dynamic/toml?url=https%3A%2F%2Fraw.githubusercontent.com%2Fwstein%2Fflix-hello%2Fmain%2F.flixw%2Flock.toml&query=%24.compiler.version&label=flix&color=blue)](.flixw/lock.toml)
+[![flixw](https://img.shields.io/badge/dynamic/toml?url=https%3A%2F%2Fraw.githubusercontent.com%2Fwstein%2Fflix-hello%2Fmain%2F.flixw%2Flock.toml&query=%24.wrapperVersion&label=flixw&color=blue)](https://github.com/wstein/flixw)
+[![Java](https://img.shields.io/badge/java-21%2B-blue)](https://adoptium.net/temurin/releases/?version=21)
+[![License](https://img.shields.io/github/license/wstein/flix-hello?color=blue)](LICENSE)
+
 A GitHub template for starting a [Flix](https://flix.dev) project, and a
 worked example of [`flixw`](https://github.com/wstein/flixw) — a
 repository-local bootstrap that fetches the compiler the project pins instead
@@ -29,14 +35,24 @@ it outside the repository, and runs it. Later commands reuse the cache.
 ## What is in here
 
 ```
-src/Main.flix          a pure `greeting` function and the `main` that prints it
-test/TestMain.flix     @Test functions covering `greeting`
-flix.toml              package metadata and the lowest Flix version accepted
-.flixw/lock.toml       the exact compiler, its URL, and its SHA-256
-flixw, flixw.cmd       the wrapper: a POSIX shim and a cmd.exe trampoline
-.flixw/flixw.java      the wrapper proper — one dependency-free Java file
-AGENTS.md              instructions for coding agents; CLAUDE.md and
-                       .github/copilot-instructions.md point at it
+.
+├── src/
+│   └── Main.flix                 the pure greeting function and the main that prints it
+├── test/
+│   └── TestMain.flix             @Test functions covering greeting
+├── .flixw/
+│   ├── flixw.java                the wrapper proper — one dependency-free Java file
+│   └── lock.toml                 the exact compiler, its URL, and its SHA-256
+├── .github/
+│   ├── workflows/
+│   │   └── build-and-test.yaml   validate, check and test, on three platforms
+│   └── dependabot.yml            keeps the workflow's pinned action digests current
+├── flix.toml                     package metadata and the lowest Flix version accepted
+├── flixw                         the POSIX shim
+├── flixw.cmd                     the cmd.exe trampoline
+├── AGENTS.md                     instructions for coding agents; CLAUDE.md and
+│                                 .github/copilot-instructions.md point at it
+└── LICENSE                       Apache-2.0, with the copyright line to replace
 ```
 
 `flix.toml` states a *floor* and `.flixw/lock.toml` states the *pin*. They are
@@ -74,7 +90,11 @@ mode, so run `./flixw format` before you commit.
 1. `flix.toml` — set `name`, `description`, `version` and `authors`.
 2. `LICENSE` — replace the copyright line, or the whole license.
 3. `src/` and `test/` — replace the greeting with your own code.
-4. This README.
+4. This README, including the badge URLs — they name `wstein/flix-hello` and
+   will report this repository's state, not yours, until you change them.
+
+The Flix and `flixw` badges read `.flixw/lock.toml` directly, so re-pinning with
+`./flixw pin <version>` updates them without touching this file.
 
 ## License
 
