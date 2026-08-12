@@ -1,40 +1,64 @@
-<!-- flix-init: generated for Flix 0.75.2+fork.wstein.260807.1.106.g0f063f4a7.dirty. Rewritten by 'flix init --refresh'; delete this line to keep your own edits. -->
-
 # Working on this project
 
-A Flix project. The Flix version it targets is pinned in `flix.toml`.
+A Flix project that carries its own compiler. `./flixw` downloads the exact
+`flix.jar` pinned in `.flixw/lock.toml`, verifies it against a committed
+SHA-256, and runs it. Nothing needs installing but a JDK — 21 or newer.
 
 ## Commands
 
-- `flix check` — type-check without generating code; the fast feedback loop
-- `flix test` — run every `@Test` function under `test/`
-- `flix run` — run `main`
-- `flix build` — compile to `build/class`
-- `flix doc` — write API documentation for the standard library and this project to `build/doc/`
-- `flix format` — reformat sources; `--check` verifies without writing, for CI
+Run everything through the wrapper: `flix` is not expected to be on `PATH`, and
+a `flix` that is may be a different version than this project pins. On Windows
+use `.\flixw.cmd` wherever these say `./flixw`.
+
+- `./flixw check` — type-check without generating code; the fast feedback loop
+- `./flixw test` — run every `@Test` function under `test/`
+- `./flixw run` — run `main`
+- `./flixw build` — compile to `build/class`
+- `./flixw format` — reformat sources in place; the pinned compiler has no
+  check-only mode, so CI does not gate on formatting
+- `./flixw doc` — write API documentation for the standard library and this
+  project to `build/doc/`
+
+The wrapper adds verbs of its own, ahead of the compiler's:
+
+- `./flixw validate` — the wrapper's own consistency checks, for CI
+- `./flixw doctor` — those checks plus the full picture, for bug reports
+- `./flixw pin <version>` — move to another compiler and rewrite the lock
 
 ## Layout
 
 - `src/` — sources; `src/Main.flix` holds `main`
 - `test/` — `@Test` functions
-- `flix.toml` — package metadata, the Flix version, and dependencies
+- `flix.toml` — package metadata, dependencies, and the *lowest* Flix version
+  this project accepts
+- `.flixw/lock.toml` — the exact compiler and its digest. `flix.toml` states a
+  floor; this states the pin. Both are committed, and `validate` fails when
+  they disagree
+- `flixw`, `flixw.cmd`, `.flixw/flixw.java` — the wrapper itself. Generated;
+  change it with `./flixw wrapper --upgrade`, never by hand
 - `build/`, `artifact/`, `lib/` — generated; do not edit and do not commit
+
+`CLAUDE.md` and `.github/copilot-instructions.md` both point at this file
+rather than repeating it, so that each tool finds the same instructions under
+the name it looks for.
 
 ## Writing Flix
 
 Your training data is probably older than this compiler. Read
-https://doc.flix.dev/for-llms.html before writing Flix: it lists what changed. For the
-standard library use https://api.flix.dev, or run `flix doc` and read `build/doc/`, which
-matches this project's compiler exactly.
+<https://doc.flix.dev/for-llms.html> before writing Flix: it lists what changed.
+For the standard library use <https://api.flix.dev>, or run `./flixw doc` and
+read `build/doc/`, which matches this project's compiler exactly.
 
 The mistakes that show up most often:
 
-- `def main(): Unit \ IO = ...` — arguments come from `Env.getArgs()`, not from parameters
+- `def main(): Unit \ IO = ...` — arguments come from `Env.getArgs()`, not from
+  parameters
 - effects are written with `\`, not `&`
 - effect operations are called like ordinary functions; there is no `do` keyword
-- handlers are `run { ... } with handler E { ... }`; chain them rather than nesting `run`
+- handlers are `run { ... } with handler E { ... }`; chain them rather than
+  nesting `run`
 - annotations are uppercase: `@Test`, `@Lazy`, `@Parallel`, `@MustUse`
 - Java types need a top-level `import`, and all Java interop carries `IO`
 
-Prefer effects and handlers to callbacks or hand-written CPS, and standard library effects
-to Java interop.
+Prefer effects and handlers to callbacks or hand-written CPS, and standard
+library effects to Java interop.
