@@ -45,8 +45,9 @@ it outside the repository, and runs it. Later commands reuse the cache.
 │   └── lock.toml                 the exact compiler, its URL, and its SHA-256
 ├── .github/
 │   ├── workflows/
-│   │   └── build-and-test.yaml   validate, check and test, on three platforms
-│   └── dependabot.yml            keeps the workflow's pinned action digests current
+│   │   ├── build-and-test.yaml   validate, check and test, on three platforms
+│   │   └── update-flix.yaml      weekly: re-pin the compiler, open a pull request
+│   └── dependabot.yml            keeps the workflows' pinned action digests current
 ├── flix.toml                     package metadata and the lowest Flix version accepted
 ├── flixw                         the POSIX shim
 ├── flixw.cmd                     the cmd.exe trampoline
@@ -86,6 +87,13 @@ commit digests and kept current by Dependabot.
 
 There is no formatting gate: the pinned compiler's `format` has no check-only
 mode, so run `./flixw format` before you commit.
+
+`.github/workflows/update-flix.yaml` runs weekly. Dependabot has no ecosystem
+for a compiler pinned by URL and digest, so this is its counterpart: it resolves
+the newest `flix/flix` release, re-pins, runs `validate`, `check` and `test`,
+and opens a pull request if all three pass. It never pushes to the default
+branch — the digest in a re-pinned lock is computed by the runner, and that is
+the thing worth reading before merging.
 
 ## After you template this
 
