@@ -97,10 +97,17 @@ branch — the digest in a re-pinned lock is computed by the runner, and that is
 the thing worth reading before merging.
 
 `.github/workflows/docs.yaml` runs `./flixw doc` on every push to `main` and
-publishes `build/doc/` to GitHub Pages — for this repository, at
-<https://wstein.github.io/flix-template/>. The rendered standard library then
-matches the pinned compiler rather than whatever `api.flix.dev` currently
-serves.
+publishes this project's own pages to GitHub Pages — for this repository, at
+<https://wstein.github.io/flix-template/>.
+
+`flix doc` renders the whole standard library alongside the project and has no
+option to narrow that: `--Xlib` decides what is *compiled*, and without the
+library nothing compiles at all. Its `index.html` is the stdlib's `Prelude`
+page. So the workflow picks out the project's pages afterwards — by which ones
+carry a source link into the workspace, which no library page does — writes its
+own landing page listing them, and refuses to publish at all if that finds
+nothing. A link check then fails the build if anything published points at a
+page that was not.
 
 Pages has to be enabled once, under **Settings → Pages** with source
 **GitHub Actions**: the default `GITHUB_TOKEN` cannot create a Pages site even
