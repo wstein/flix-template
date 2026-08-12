@@ -1,11 +1,11 @@
 @Test
 def testGreeting(): Unit \ Assert =
-    Assert.assertEq(expected = "Hello, World!", greeting("World"))
+    Assert.assertEq(expected = "Hello, World!", Hello.greeting("World"))
 
 @Test
 def testGreetingUsesTheGivenName(): Unit \ Assert =
-    Assert.assertEq(expected = "Hello, Flix!", greeting("Flix"))
+    Assert.assertEq(expected = "Hello, Flix!", Hello.greeting("Flix"))
 
 @Test
 def testGreetingWithEmptyName(): Unit \ Assert =
-    Assert.assertEq(expected = "Hello, !", greeting(""))
+    Assert.assertEq(expected = "Hello, !", Hello.greeting(""))

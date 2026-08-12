@@ -37,9 +37,9 @@ it outside the repository, and runs it. Later commands reuse the cache.
 ```
 .
 ├── src/
-│   └── Main.flix                 the pure greeting function and the main that prints it
+│   └── Main.flix                 mod Hello, and the main that prints its greeting
 ├── test/
-│   └── TestMain.flix             @Test functions covering greeting
+│   └── TestMain.flix             @Test functions covering Hello.greeting
 ├── .flixw/
 │   ├── flixw.java                the wrapper proper — one dependency-free Java file
 │   └── lock.toml                 the exact compiler, its URL, and its SHA-256
