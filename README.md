@@ -79,8 +79,10 @@ one file.
 `.github/workflows/build-and-test.yaml` runs `validate`, `check` and `test`
 through the wrapper on Linux, macOS and Windows — the Windows leg exercises
 `flixw.cmd`, the others the POSIX shim. It installs a JDK and nothing else,
-which is the same starting position a new contributor is in. Actions are pinned
-to commit digests and kept current by Dependabot.
+which is the same starting position a new contributor is in. The compiler is
+restored from the runner cache, keyed on `.flixw/lock.toml`, and its digest is
+re-verified whether it came from the cache or the network. Actions are pinned to
+commit digests and kept current by Dependabot.
 
 There is no formatting gate: the pinned compiler's `format` has no check-only
 mode, so run `./flixw format` before you commit.

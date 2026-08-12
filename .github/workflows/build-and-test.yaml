@@ -51,6 +51,28 @@ jobs:
           distribution: temurin
           java-version: '21'
 
+      # The wrapper's cache at its per-platform default location. It is
+      # deliberately not redirected with FLIX_CACHE_HOME: pointing it somewhere
+      # uniform would be tidier here and would stop CI from ever exercising the
+      # path resolution a contributor actually gets.
+      #
+      # Caching something the build will execute is normally a smell. It is safe
+      # here for the one reason that makes flixw worth demonstrating: the digest
+      # in the lock is re-verified on every run, so a restored -- or tampered --
+      # cache cannot substitute a different compiler, only save a download.
+      - name: Restore the pinned compiler
+        uses: actions/cache@55cc8345863c7cc4c66a329aec7e433d2d1c52a9 # v6.1.0
+        with:
+          path: |
+            ~/.cache/flixw
+            ~/Library/Caches/flixw
+            ~\AppData\Local\flixw
+          # The lock names the compiler, its digest and the wrapper version, so
+          # it alone decides whether an entry is usable. No restore-keys: a
+          # partial hit could only hold a compiler this project no longer pins,
+          # which is a download either way.
+          key: ${{ runner.os }}-flixw-${{ hashFiles('.flixw/lock.toml') }}
+
       # Wrapper integrity first: the shims match the committed stage 0, the lock
       # satisfies flix.toml, and every generated file is tracked by git. A
       # failure here means the rest of the run would prove nothing.
