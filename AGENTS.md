@@ -36,6 +36,9 @@ The wrapper adds verbs of its own, ahead of the compiler's:
   they disagree
 - `flixw`, `flixw.cmd`, `.flixw/flixw.java` — the wrapper itself. Generated;
   change it with `./flixw wrapper --upgrade`, never by hand
+- `.github/workflows/` — `build-and-test.yaml` on three platforms,
+  `update-flix.yaml` weekly, `docs.yaml` for the API documentation. All three
+  drive the wrapper; none of them install Flix
 - `build/`, `artifact/`, `lib/` — generated; do not edit and do not commit
 
 `CLAUDE.md` and `.github/copilot-instructions.md` both point at this file
