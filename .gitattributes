@@ -3,5 +3,6 @@
 /.flixw/flixw.java text eol=lf
 /.flixw/lock.toml text eol=lf
 /.flixw/.gitignore text eol=lf
+/.flixw/.sccignore text eol=lf
 /flixw.cmd text eol=crlf
 # <<< flixw <<<
