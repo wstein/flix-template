@@ -1,4 +1,4 @@
-// flixw 0.25.11 -- stage 0. GENERATED: this is the documented source with its
+// flixw 0.25.12 -- stage 0. GENERATED: this is the documented source with its
 // comments removed, which is why it reads as bare mechanism.
 //
 // The commentary is the security story -- why each check exists, and which
@@ -8,7 +8,7 @@
 //   https://wstein.github.io/flixw/          docs, and the lock schema
 //   https://github.com/wstein/flixw          the source this was made from
 //
-// Reproducible on purpose: `java tests/strip.java 0.25.11` at tag vsrc/flixw.java <version> regenerates
+// Reproducible on purpose: `java tests/strip.java 0.25.12` at tag vsrc/flixw.java <version> regenerates
 // this file byte for byte, so the readable source and the running one can be
 // checked against each other rather than taken on trust.
 import java.io.ByteArrayOutputStream;
@@ -43,7 +43,7 @@ import java.util.regex.Pattern;
 
 public final class flixw {
 
-  static final String WRAPPER_VERSION = "0.25.11";
+  static final String WRAPPER_VERSION = "0.25.12";
   static final String WRAPPER_DIR = ".flixw";
   static final int MIN_JAVA = 21;
 
@@ -2440,9 +2440,38 @@ public final class flixw {
     return shipped.equals("flixw.cmd") ? "text eol=crlf" : "text eol=lf";
   }
 
+  static boolean changesEndings(String attrs, String shipped, Map<String, String> macros) {
+    String pinned = " " + canonicalAttrs(shipped) + " ";
+    for (String token : attrs.split("\\s+")) {
+      String name = token.replaceFirst("^[-!]", "").replaceFirst("=.*", "");
+      String macro = macros.get(name);
+      if (macro != null) {
+        if (changesEndings(macro, shipped, Map.of())) return true;
+        continue;
+      }
+      if (!name.equals("text") && !name.equals("eol")) continue;
+
+      if (token.equals("text=auto") && pinned.contains(" text ")) continue;
+      if (!pinned.contains(" " + token + " ")) return true;
+    }
+    return false;
+  }
+
+  static Map<String, String> attrMacros(String text) {
+    Map<String, String> macros = new LinkedHashMap<>();
+    macros.put("binary", "-diff -merge -text");
+    for (String line : text.split("\r?\n")) {
+      String t = line.trim();
+      if (!t.startsWith("[attr]")) continue;
+      String[] parts = t.substring("[attr]".length()).split("\\s+", 2);
+      if (parts.length == 2) macros.putIfAbsent(parts[0], parts[1]);
+    }
+    return macros;
+  }
+
   static final List<String> SHIPPED =
     List.of("flixw", "flixw.cmd", WRAPPER_DIR + "/flixw.java", WRAPPER_DIR + "/lock.toml",
-        WRAPPER_DIR + "/.gitignore");
+        WRAPPER_DIR + "/.gitignore", WRAPPER_DIR + "/.sccignore");
 
   static boolean patternMatches(String pattern, String path) {
     String p = pattern.startsWith("/") ? pattern.substring(1) : pattern;
@@ -2477,13 +2506,14 @@ public final class flixw {
     }
     int after = text.lastIndexOf(end);
     if (after < 0) return bad;
+    Map<String, String> macros = attrMacros(text);
     for (String line : text.substring(after).split("\r?\n")) {
       String t = line.trim();
       if (t.isEmpty() || t.startsWith("#")) continue;
       String pattern = t.split("\\s+")[0];
       String attrs = t.substring(pattern.length()).trim();
       for (String f : SHIPPED) {
-        if (patternMatches(pattern, f) && !attrs.equals(canonicalAttrs(f))) {
+        if (patternMatches(pattern, f) && changesEndings(attrs, f, macros)) {
           System.out.println("FAIL  .gitattributes rule " + q(t)
                   + " comes after the flixw block and changes " + f);
           bad++;
@@ -2630,14 +2660,12 @@ public final class flixw {
     }
     bad += checkGitattributes(root.resolve(".gitattributes"));
 
-    List<String> generated = List.of("flixw", "flixw.cmd",
-                    WRAPPER_DIR + "/flixw.java", WRAPPER_DIR + "/lock.toml",
-                    WRAPPER_DIR + "/.gitignore");
     Integer isRepo = git(root, "rev-parse", "--is-inside-work-tree");
     if (isRepo == null || isRepo != 0) {
       System.out.println("warn  not a git work tree; cannot check tracked status");
     } else {
-      for (String rel : generated) {
+      for (String rel : SHIPPED) {
+
         if (!Files.exists(root.resolve(rel))) continue;
         Integer ignored = git(root, "check-ignore", "-q", "--", rel);
         if (ignored != null && ignored == 0) {
