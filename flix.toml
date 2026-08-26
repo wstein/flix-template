@@ -6,4 +6,4 @@ version     = "0.1.0"
 # the shape and ignores the value; flixw enforces it as the floor the lock satisfies.
 flix        = "0.75.0"
 license     = "Apache-2.0"
-authors     = ["John Doe <[EMAIL_ADDRESS]>"]
+authors     = ["John Doe <john@example.com>"]
