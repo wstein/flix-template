@@ -76,3 +76,5 @@ so never take a common top-level name.
 - two or three levels; `Internal` for what is not API
 - name a module for what is done there: `Json.Parse` holds `parse`
 - spell names out; tests flat, one `TestX` per subject
+- a library deletes `src/Main.flix`: one `main` per program, so a package that
+  ships one cannot be depended on

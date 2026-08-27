@@ -75,6 +75,8 @@ libraries do:
 - two or three levels; `Internal` for what is not API
 - modules named for what you do there: `Json.Parse` holds `parse`
 - names spelled out, and tests flat: one `TestX` per subject
+- a library deletes `src/Main.flix`: Flix allows one `main` per program, so a
+  package that ships one cannot be depended on
 
 ## What the wrapper is and is not
 
