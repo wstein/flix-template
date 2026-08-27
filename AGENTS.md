@@ -65,3 +65,14 @@ The mistakes that show up most often:
 
 Prefer effects and handlers to callbacks or hand-written CPS, and standard
 library effects to Java interop.
+
+## Naming modules
+
+A module has one declaration site in the whole program, dependencies included,
+so never take a common top-level name.
+
+- one root namespace per package, named after it: `flix-json` roots at `Json`
+- directories mirror module paths: `Json.FromJson` in `src/Json/FromJson.flix`
+- two or three levels; `Internal` for what is not API
+- name a module for what is done there: `Json.Parse` holds `parse`
+- spell names out; tests flat, one `TestX` per subject
