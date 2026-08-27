@@ -62,6 +62,20 @@ allowed to differ — any pin at or above the floor satisfies it — but
 `./flixw validate` fails when the pin does not, so the two cannot drift apart
 unnoticed.
 
+## Naming what you add
+
+A module has one declaration site in the whole program, dependencies included:
+two packages that both declare `mod Cube` cannot be used together. What Flix
+libraries do:
+
+- one root namespace, named after the package: `flix-json` roots at `Json`,
+  `flix-basicdb` at `BasicDB`
+- directories mirror module paths: `Json.FromJson` lives in
+  `src/Json/FromJson.flix`
+- two or three levels; `Internal` for what is not API
+- modules named for what you do there: `Json.Parse` holds `parse`
+- names spelled out, and tests flat: one `TestX` per subject
+
 ## What the wrapper is and is not
 
 `flixw` never patches, forks or links against the Flix compiler. It fetches the
@@ -125,7 +139,8 @@ warns rather than failing, so a fresh copy of this template does not start red.
 1. `flix.toml` — set `name`, `description`, `version` and `authors`. The package
    name is yours to choose; nothing requires it to match the repository name.
 2. `LICENSE` — replace the copyright line, or the whole license.
-3. `src/` and `test/` — replace the greeting with your own code.
+3. `src/` and `test/` — replace the greeting with your own code, minding
+   [Naming what you add](#naming-what-you-add).
 4. This README — the badge URLs and the documentation link. Until you point
    them at your own repository they report this one's state, not yours. CI
    fails on the first push until you do, and names every URL still pointing
