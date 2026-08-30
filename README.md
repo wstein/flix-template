@@ -104,6 +104,34 @@ why it is committed in full and pinned by version and digest rather than curled
 at run time. Read `.flixw/flixw.java` if that matters to you; it is deliberately
 one file.
 
+## Code metrics (optional)
+
+[`flixw-metrics`](https://github.com/wstein/flixw-metrics) is a `flixw` plugin
+that reports code-smell metrics — over-long and crammed lines, complexity,
+nesting, coupling, doc coverage — counted by the pinned compiler itself, not
+by reading the text.
+
+Plugins are a **per-machine install, not a per-repository one**: run this
+once on any machine you work from, and `./flixw metrics` works in every
+flixw project on it afterwards, this one included — nothing to add here, and
+nothing a collaborator's clone needs to repeat except the same one-time
+install.
+
+```console
+./flixw plugin install metrics 0.1.8 \
+  https://github.com/wstein/flixw-metrics/releases/download/v0.1.8/plugin.jar \
+  --sha256 bd8707afb5a06a37d26f1bd9b9d3bc3b3892a73e1617b177328a4f5ff7d7c67f
+```
+
+```sh
+./flixw metrics --format md
+```
+
+It is third-party, unaffiliated code that runs as you — see
+[flixw-metrics' own Safety section](https://github.com/wstein/flixw-metrics#safety)
+before installing anything. `AGENTS.md` asks agents working in this
+repository to run it before every commit.
+
 ## Continuous integration
 
 `.github/workflows/build-and-test.yaml` runs `validate`, `check` and `test`

@@ -18,6 +18,12 @@ use `.\flixw.cmd` wherever these say `./flixw`.
   check-only mode, so CI does not gate on formatting
 - `./flixw doc` — write API documentation for the standard library and this
   project to `build/doc/`
+- `./flixw metrics --format md` — code-smell report: over-long and crammed
+  lines, complexity, nesting, coupling, doc coverage. **Run it before every
+  commit and fix what it finds**; it needs the project to compile first, and
+  the `metrics` plugin installed once per machine — see README's "Code
+  metrics" section; this is a per-machine install, not something this
+  repository can provide
 
 The wrapper adds verbs of its own, ahead of the compiler's:
 
