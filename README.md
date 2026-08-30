@@ -24,12 +24,24 @@ installed: the first command downloads `flix.jar` for the version pinned in
 `.flixw/lock.toml`, checks it against the SHA-256 committed alongside it, caches
 it outside the repository, and runs it. Later commands reuse the cache.
 
+Run everything through the wrapper: `flix` is not expected to be on `PATH`,
+and a `flix` that is may be a different version than this project pins. On
+Windows use `.\flixw.cmd` wherever these say `./flixw`.
+
 ```sh
-./flixw check        # type-check; the fast feedback loop
+./flixw check        # type-check without generating code; the fast feedback loop
 ./flixw test         # run every @Test function under test/
+./flixw build        # compile to build/class
+./flixw doc          # write API documentation to build/doc/
 ./flixw format       # reformat sources in place
+```
+
+The wrapper adds verbs of its own, ahead of the compiler's:
+
+```sh
 ./flixw validate     # the wrapper's own consistency checks; what CI runs first
 ./flixw doctor       # validate, plus the full picture, for bug reports
+./flixw pin <version> # move to another compiler and rewrite the lock
 ```
 
 ## What is in here
