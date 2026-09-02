@@ -28,8 +28,11 @@ use `.\flixw.cmd` wherever these say `./flixw`.
 The wrapper adds verbs of its own, ahead of the compiler's:
 
 - `./flixw validate` — the wrapper's own consistency checks, for CI
-- `./flixw doctor` — those checks plus the full picture, for bug reports
+- `./flixw doctor` — those checks plus the full picture, for bug reports (`--fix` to repair)
 - `./flixw pin <version>` — move to another compiler and rewrite the lock
+- `./flixw info` — view project, compiler, Java, and cache state
+- `./flixw local add <path>` / `./flixw local <verb>` — override declared GitHub dependencies with local checkouts for testing and development
+- `./flixw examples <verb> <name>` — run, check, build, or test an isolated package in `examples/<name>`
 
 ## Layout
 

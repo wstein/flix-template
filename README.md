@@ -40,8 +40,12 @@ The wrapper adds verbs of its own, ahead of the compiler's:
 
 ```sh
 ./flixw validate     # the wrapper's own consistency checks; what CI runs first
-./flixw doctor       # validate, plus the full picture, for bug reports
+./flixw doctor       # validate, plus the full picture, for bug reports (--fix repairs)
+./flixw info         # project, compiler, java, and cache state
 ./flixw pin <version> # move to another compiler and rewrite the lock
+./flixw local add <path> # override a declared GitHub dependency with a local checkout
+./flixw local <verb> # run/check/build/test against local dependency overrides
+./flixw examples <verb> <name> # run/check/build/test an isolated example in examples/<name>
 ```
 
 ## What is in here
