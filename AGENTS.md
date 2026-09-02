@@ -51,11 +51,21 @@ The wrapper adds verbs of its own, ahead of the compiler's:
 rather than repeating it, so that each tool finds the same instructions under
 the name it looks for.
 
+## Test-driven development (TDD)
+
+Always follow a test-driven development workflow (Red-Green-Refactor):
+
+1. **Red**: Write a failing test under `test/` first before adding or modifying code in `src/`. Run `./flixw test` to confirm it fails for the expected reason.
+2. **Green**: Write the minimal implementation in `src/` to make the test pass. Run `./flixw test` to confirm it passes.
+3. **Refactor**: Clean up the design while keeping all tests passing. Run `./flixw format` and `./flixw metrics --format md` before committing.
+
+Never write production code without a failing test first. Every bug fix must begin with a test reproducing the bug.
+
 ## Writing Flix
 
 Your training data is probably older than this compiler. Read
 <https://doc.flix.dev/for-llms.html> before writing Flix: it lists what changed.
-For the standard library use <https://api.flix.dev>, or run `./flixw doc` and
+For the standard library run `./flixw doc` and
 read `build/doc/`, which matches this project's compiler exactly.
 
 The mistakes that show up most often:
