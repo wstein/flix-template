@@ -58,7 +58,7 @@ The wrapper adds verbs of its own, ahead of the compiler's:
 │   └── TestMain.flix             @Test functions covering Hello.greeting
 ├── .flixw/
 │   ├── flixw.java                the wrapper proper — one dependency-free Java file
-│   └── lock.toml                 the exact compiler, its URL, and its SHA-256
+│   └── lock.toml                 exact compiler and plugin versions and SHA-256 digests
 ├── .github/
 │   ├── workflows/
 │   │   ├── build-and-test.yaml   validate, check and test, on three platforms
@@ -108,33 +108,52 @@ why it is committed in full and pinned by version and digest rather than curled
 at run time. Read `.flixw/flixw.java` if that matters to you; it is deliberately
 one file.
 
-## Code metrics (optional)
+## Code metrics for contributors
 
 [`flixw-metrics`](https://github.com/wstein/flixw-metrics) is a `flixw` plugin
-that reports code-smell metrics — over-long and crammed lines, complexity,
-nesting, coupling, doc coverage — counted by the pinned compiler itself, not
-by reading the text.
+that reports compiler-backed structure, rankings, and code-quality findings.
+Besides line length, complexity, nesting, coupling, and documentation coverage,
+it retains effect surfaces, handler shape, effect declarations and instantiated
+effect arguments as typed context. Context-only measurements are not findings
+and should not be treated as automatic refactoring instructions.
 
-Plugins are a **per-machine install, not a per-repository one**: run this
-once on any machine you work from, and `./flixw metrics` works in every
-flixw project on it afterwards, this one included — nothing to add here, and
-nothing a collaborator's clone needs to repeat except the same one-time
-install.
+The repository declares the exact metrics version, artifact digest, command,
+and source in `.flixw/lock.toml`. Plugin bytes live in a machine-wide cache and
+are never fetched implicitly: run this once on each machine. If the declared
+build is missing, `./flixw metrics` prints the same pinned command.
 
 ```console
-./flixw plugin install metrics 0.1.8 \
-  https://github.com/wstein/flixw-metrics/releases/download/v0.1.8/plugin.jar \
-  --sha256 bd8707afb5a06a37d26f1bd9b9d3bc3b3892a73e1617b177328a4f5ff7d7c67f
+./flixw plugin install metrics 0.3.0 \
+  https://github.com/wstein/flixw-metrics/releases/download/v0.3.0/plugin.jar \
+  --sha256 a8f961815bd6ecdd3c27d19eb1b1763f85207b7bf86265014ffc84529d96582e
 ```
 
 ```sh
-./flixw metrics --format md
+./flixw metrics report --format md
+./flixw metrics report --format json --view findings --severity warning
 ```
 
 It is third-party, unaffiliated code that runs as you — see
 [flixw-metrics' own Safety section](https://github.com/wstein/flixw-metrics#safety)
-before installing anything. `AGENTS.md` asks agents working in this
-repository to run it before every commit.
+before installing anything. `AGENTS.md` asks agents to run the Markdown report
+before every commit and recommends compact JSON views to avoid wasting model
+context on data unrelated to the current task.
+
+For an established project, `./flixw metrics init` creates a reviewed policy
+and baseline, then prints a `--fail-on-new warning` command suitable for CI.
+This template does not pre-create those project-specific policy files: their
+thresholds and baseline should describe the codebase made from the template,
+not the greeting example.
+
+## Working with coding agents
+
+`AGENTS.md` is the single instruction source used by Codex, Claude, and GitHub
+Copilot. It requires test-driven changes, wrapper-only commands, compact metrics
+views for machine consumption, and current Flix syntax. Its language guidance
+tracks the official [Flix page for LLMs](https://doc.flix.dev/for-llms.html):
+consult [api.flix.dev](https://api.flix.dev) instead of inspecting `flix.jar`,
+prefer `Util.Json`, model side effects with effects and handlers, keep companions
+inside their modules, and avoid obsolete Java-interop and Datalog syntax.
 
 ## Continuous integration
 

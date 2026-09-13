@@ -18,12 +18,16 @@ use `.\flixw.cmd` wherever these say `./flixw`.
   check-only mode, so CI does not gate on formatting
 - `./flixw doc` — write API documentation for the standard library and this
   project to `build/doc/`
-- `./flixw metrics --format md` — code-smell report: over-long and crammed
-  lines, complexity, nesting, coupling, doc coverage. **Run it before every
-  commit and fix what it finds**; it needs the project to compile first, and
-  the `metrics` plugin installed once per machine — see README's "Code
-  metrics" section; this is a per-machine install, not something this
-  repository can provide
+- `./flixw metrics report --format md` — review-ready code metrics and findings
+- `./flixw metrics report --format json --view findings --severity warning` —
+  compact, actionable input for an agent; use `--view summary` for a quick
+  project snapshot
+
+Run metrics after tests and before every commit. Fix genuine findings or document
+why they are intentional; do not mechanically optimize rankings or contextual
+handler/effect facts, which are measurements rather than policy. The exact plugin
+version and digest are declared in `.flixw/lock.toml`. Installation is still
+per-machine; if it is missing, `./flixw metrics` prints the pinned install command.
 
 The wrapper adds verbs of its own, ahead of the compiler's:
 
@@ -60,27 +64,37 @@ Always follow a test-driven development workflow (Red-Green-Refactor):
 
 1. **Red**: Write a failing test under `test/` first before adding or modifying code in `src/`. Run `./flixw test` to confirm it fails for the expected reason.
 2. **Green**: Write the minimal implementation in `src/` to make the test pass. Run `./flixw test` to confirm it passes.
-3. **Refactor**: Clean up the design while keeping all tests passing. Run `./flixw format` and `./flixw metrics --format md` before committing.
+3. **Refactor**: Clean up the design while keeping all tests passing. Run
+   `./flixw format` and `./flixw metrics report --format md` before committing.
 
 Never write production code without a failing test first. Every bug fix must begin with a test reproducing the bug.
 
 ## Writing Flix
 
-Your training data is probably older than this compiler. Read
-<https://doc.flix.dev/for-llms.html> before writing Flix: it lists what changed.
-For the standard library run `./flixw doc` and
-read `build/doc/`, which matches this project's compiler exactly.
+Your training data is probably older than this compiler. Before writing Flix,
+read the official [Flix guidance for LLMs](https://doc.flix.dev/for-llms.html)
+and prefer the current book over research papers, talks, and old examples. Use
+[api.flix.dev](https://api.flix.dev) for standard-library modules, types,
+functions, and signatures. Do not unpack, decompile, or grep `flix.jar` to guess
+at APIs. `./flixw doc` remains useful for this project's generated API pages.
 
 The mistakes that show up most often:
 
 - `def main(): Unit \ IO = ...` — arguments come from `Env.getArgs()`, not from
   parameters
+- use built-in `Util.Json`, not the third-party `flix-json` package
 - effects are written with `\`, not `&`
 - effect operations are called like ordinary functions; there is no `do` keyword
 - handlers are `run { ... } with handler E { ... }`; chain them rather than
   nesting `run`
+- prefer standard-library effects and handle them near `main`; do not simulate
+  effects with callback-based CPS
 - annotations are uppercase: `@Test`, `@Lazy`, `@Parallel`, `@MustUse`
-- Java types need a top-level `import`, and all Java interop carries `IO`
+- companion enums, structs, effects, and traits go first inside their module
+- Datalog `inject` names predicate arity (`Edge/2`); predicate symbols are
+  inferred, so do not write old `rel` or `lat` declarations
+- Java types need a top-level `import`; Java interop carries `IO`, and `unsafe`
+  is only for calls known to be pure
 
 Prefer effects and handlers to callbacks or hand-written CPS, and standard
 library effects to Java interop.
