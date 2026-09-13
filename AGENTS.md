@@ -69,6 +69,18 @@ Always follow a test-driven development workflow (Red-Green-Refactor):
 
 Never write production code without a failing test first. Every bug fix must begin with a test reproducing the bug.
 
+## Commits
+
+Make commits atomic and focused: each commit should contain one coherent change
+that can be reviewed and reverted independently. Keep its tests and implementation
+together, and do not mix unrelated refactors, formatting, or cleanup into the same
+commit. Before committing, run the relevant tests and the required metrics command.
+
+Use Conventional Commits for commit messages, with an imperative, concise subject:
+`<type>(<optional-scope>): <description>`. Prefer standard types such as `feat`,
+`fix`, `test`, `refactor`, `docs`, `build`, and `ci`. Mark breaking changes with
+`!` or a `BREAKING CHANGE:` footer.
+
 ## Writing Flix
 
 Your training data is probably older than this compiler. Before writing Flix,
