@@ -1,4 +1,4 @@
-// flixw 0.31.0 -- stage 0. GENERATED: this is the documented source with its
+// flixw 0.31.3 -- stage 0. GENERATED: this is the documented source with its
 // comments removed, which is why it reads as bare mechanism.
 //
 // The commentary is the security story -- why each check exists, and which
@@ -8,7 +8,7 @@
 //   https://wstein.github.io/flixw/          docs, and the lock schema
 //   https://github.com/wstein/flixw          the source this was made from
 //
-// Reproducible on purpose: `java tests/strip.java 0.31.0` at tag vsrc/flixw.java <version> regenerates
+// Reproducible on purpose: `java tests/strip.java 0.31.3` at tag vsrc/flixw.java <version> regenerates
 // this file byte for byte, so the readable source and the running one can be
 // checked against each other rather than taken on trust.
 import java.io.ByteArrayOutputStream;
@@ -44,7 +44,7 @@ import java.util.regex.Pattern;
 
 public final class flixw {
 
-  static final String WRAPPER_VERSION = "0.31.0";
+  static final String WRAPPER_VERSION = "0.31.3";
   static final String WRAPPER_DIR = ".flixw";
   static final int MIN_JAVA = 21;
 
@@ -1951,7 +1951,11 @@ public final class flixw {
 
   static void dispatchLocal(Path root, Path jar, Jvm jvm, boolean forExample, List<String> rest) {
     String usage = forExample ? EXAMPLES_USAGE : LOCAL_USAGE;
-    if (!rest.isEmpty() && (rest.get(0).equals("--help") || rest.get(0).equals("-h"))) {
+
+    boolean help = !rest.isEmpty() && (rest.get(0).equals("--help") || rest.get(0).equals("-h"))
+          || forExample && rest.size() > 1
+           && (rest.get(1).equals("--help") || rest.get(1).equals("-h"));
+    if (help) {
       System.out.println(usage); return;
     }
     String mode;
@@ -1959,6 +1963,9 @@ public final class flixw {
     if (forExample) {
       if (rest.size() < 2)
         throw w009("examples local needs a verb and an example name" + "\n       " + usage);
+
+      if (rest.get(1).equals("--"))
+        throw w009("examples local: <name> is required before '--'" + "\n       " + usage);
 
       if (rest.get(0).startsWith("-") || rest.get(1).startsWith("-"))
         throw w009("examples local: expected '<verb> <name>', not a flag in either position"
