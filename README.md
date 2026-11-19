@@ -218,9 +218,18 @@ npm run format:check
 
 Formatting is done by Prettier with the Flix plugin
 ([`prettier-plugin-flix`](https://github.com/wstein/prettier-plugin-flix)); it
-supersedes the `flixw-fmt` plugin, which this template does not use. To rewrite
-the files instead of checking them, run
-`npx prettier --write "src/**/*.flix" "test/**/*.flix"`.
+supersedes the `flixw-fmt` plugin, which this template does not use. Both
+commands are also available through the wrapper as tasks from
+[`.flixw/tasks.toml`](.flixw/tasks.toml), which is the same idea as npm's
+`scripts`:
+
+```sh
+./flixw task fmt-check   # check; the same as npm run format:check
+./flixw task fmt         # rewrite the files in place
+```
+
+The tasks are not called `format`: `./flixw format` is the Flix compiler's own
+formatter verb, which this project does not use.
 
 The npm lockfile pins Prettier and the prebuilt plugin. The plugin tracks the
 Flix 0.80 grammar, which is also the compiler `flixw` pins here. When updating
