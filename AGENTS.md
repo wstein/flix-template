@@ -26,9 +26,9 @@ different version than this project pins. On Windows use
 
 Run metrics after tests and before every commit. Metrics 0.6.0 does not yet
 support the pinned Flix 0.80.0: `./flixw metrics` prints "the pinned compiler
-has no supported engine API" and exits 0 without a report. Until a plugin release
-lists 0.80.0, say in the commit or pull request that no metrics report could be
-produced instead of treating the empty run as a clean result. Fix genuine findings or document
+has no supported engine API" and exits with status 2 without a report. Until a
+plugin release lists 0.80.0, say in the commit or pull request that no metrics
+report could be produced instead of treating the failed run as a clean result. Fix genuine findings or document
 why they are intentional; do not mechanically optimize rankings or contextual
 handler/effect facts, which are measurements rather than policy. The exact plugin
 version and digest are declared in `.flixw/lock.toml`. Installation is still
