@@ -19,21 +19,20 @@ Click **Use this template**, clone your copy, and run it:
 ./flixw run          # .\flixw.cmd run on Windows
 ```
 
-The only prerequisite is a JDK, Java 21 or newer. You do not need Flix
-installed: the first command downloads `flix.jar` for the version pinned in
-`.flixw/lock.toml`, checks it against the SHA-256 committed alongside it, caches
-it outside the repository, and runs it. Later commands reuse the cache.
+Building and testing Flix code only requires a JDK at version 21 or newer.
+The first command downloads `flix.jar` for the version pinned in
+`.flixw/lock.toml`, checks the committed SHA-256, caches the JAR outside the
+repository, and runs it. Later commands reuse the cache.
 
-Run everything through the wrapper: `flix` is not expected to be on `PATH`,
-and a `flix` that is may be a different version than this project pins. On
-Windows use `.\flixw.cmd` wherever these say `./flixw`.
+Run Flix compiler commands through the wrapper. A `flix` on `PATH` may be a
+different version than this project pins. On Windows use
+`.\flixw.cmd` wherever these say `./flixw`.
 
 ```sh
 ./flixw check        # type-check without generating code; the fast feedback loop
 ./flixw test         # run every @Test function under test/
 ./flixw build        # compile to build/class
 ./flixw doc          # write API documentation to build/doc/
-./flixw format       # reformat sources in place
 ```
 
 The wrapper adds verbs of its own, ahead of the compiler's:
@@ -62,6 +61,7 @@ The wrapper adds verbs of its own, ahead of the compiler's:
 ├── .github/
 │   ├── workflows/
 │   │   ├── build-and-test.yaml   validate, check and test, on three platforms
+│   │   ├── format.yaml           check formatting with the pinned Prettier plugin
 │   │   ├── update-flix.yaml      weekly: re-pin the compiler, open a pull request
 │   │   └── docs.yaml             build the API docs, publish them to Pages
 │   └── dependabot.yml            keeps the workflows' pinned action digests current
@@ -148,7 +148,7 @@ not the greeting example.
 ## Working with coding agents
 
 `AGENTS.md` is the single instruction source used by Codex, Claude, and GitHub
-Copilot. It requires test-driven changes, wrapper-only commands, compact metrics
+Copilot. It requires test-driven changes, compiler commands through the wrapper, compact metrics
 views for machine consumption, and current Flix syntax. Its language guidance
 tracks the official [Flix page for LLMs](https://doc.flix.dev/for-llms.html):
 consult [api.flix.dev](https://api.flix.dev) instead of inspecting `flix.jar`,
@@ -164,9 +164,6 @@ which is the same starting position a new contributor is in. The compiler is
 restored from the runner cache, keyed on `.flixw/lock.toml`, and its digest is
 re-verified whether it came from the cache or the network. Actions are pinned to
 commit digests and kept current by Dependabot.
-
-There is no formatting gate: the pinned compiler's `format` has no check-only
-mode, so run `./flixw format` before you commit.
 
 `.github/workflows/update-flix.yaml` runs weekly. Dependabot has no ecosystem
 for a compiler pinned by URL and digest, so this is its counterpart: it resolves
@@ -198,6 +195,22 @@ Pages has to be enabled once, under **Settings → Pages** with source
 **GitHub Actions**: the default `GITHUB_TOKEN` cannot create a Pages site even
 with `pages: write`. Until it is, the documentation is still built and the run
 warns rather than failing, so a fresh copy of this template does not start red.
+
+## Formatting
+
+The separate [Format workflow](.github/workflows/format.yaml) checks the
+`src/` and `test/` Flix files with Prettier. To run that check locally, use
+Node.js 22 and run:
+
+```sh
+npm ci
+npm run format:check
+```
+
+The npm lockfile pins Prettier and the prebuilt Flix plugin. The formatter
+tracks the Flix 0.80 grammar and the template files have also been tested
+against the compiler pinned by `flixw`. When updating either version, run
+both the format check and `./flixw test`.
 
 ## After you template this
 

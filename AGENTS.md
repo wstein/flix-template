@@ -2,20 +2,20 @@
 
 A Flix project that carries its own compiler. `./flixw` downloads the exact
 `flix.jar` pinned in `.flixw/lock.toml`, verifies it against a committed
-SHA-256, and runs it. Nothing needs installing but a JDK — 21 or newer.
+SHA-256, and runs it. A JDK at version 21 or newer is sufficient to build and
+test. The optional local Prettier check uses Node.js 22 and `npm ci`.
 
 ## Commands
 
-Run everything through the wrapper: `flix` is not expected to be on `PATH`, and
-a `flix` that is may be a different version than this project pins. On Windows
-use `.\flixw.cmd` wherever these say `./flixw`.
+Run Flix compiler commands through the wrapper. A `flix` on `PATH` may be a
+different version than this project pins. On Windows use
+`.\flixw.cmd` wherever these say `./flixw`.
 
 - `./flixw check` — type-check without generating code; the fast feedback loop
 - `./flixw test` — run every `@Test` function under `test/`
 - `./flixw run` — run `main`
 - `./flixw build` — compile to `build/class`
-- `./flixw format` — reformat sources in place; the pinned compiler has no
-  check-only mode, so CI does not gate on formatting
+- `npm run format:check` — check the formatting of Flix files under `src/` and `test/`
 - `./flixw doc` — write API documentation for the standard library and this
   project to `build/doc/`
 - `./flixw metrics report --format md` — review-ready code metrics and findings
@@ -50,8 +50,8 @@ The wrapper adds verbs of its own, ahead of the compiler's:
 - `flixw`, `flixw.cmd`, `.flixw/flixw.java` — the wrapper itself. Generated;
   change it with `./flixw wrapper --upgrade`, never by hand
 - `.github/workflows/` — `build-and-test.yaml` on three platforms,
-  `update-flix.yaml` weekly, `docs.yaml` for the API documentation. All three
-  drive the wrapper; none of them install Flix
+  `update-flix.yaml` weekly, and `docs.yaml` for the API documentation all
+  drive the wrapper. `format.yaml` runs the separate Prettier format check.
 - `build/`, `artifact/`, `lib/` — generated; do not edit and do not commit
 
 `CLAUDE.md` and `.github/copilot-instructions.md` both point at this file
@@ -65,7 +65,7 @@ Always follow a test-driven development workflow (Red-Green-Refactor):
 1. **Red**: Write a failing test under `test/` first before adding or modifying code in `src/`. Run `./flixw test` to confirm it fails for the expected reason.
 2. **Green**: Write the minimal implementation in `src/` to make the test pass. Run `./flixw test` to confirm it passes.
 3. **Refactor**: Clean up the design while keeping all tests passing. Run
-   `./flixw format` and `./flixw metrics report --format md` before committing.
+   `npm run format:check` and `./flixw metrics report --format md` before committing.
 
 Never write production code without a failing test first. Every bug fix must begin with a test reproducing the bug.
 
