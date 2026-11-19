@@ -123,15 +123,24 @@ are never fetched implicitly: run this once on each machine. If the declared
 build is missing, `./flixw metrics` prints the same pinned command.
 
 ```console
-./flixw plugin install metrics 0.3.0 \
-  https://github.com/wstein/flixw-metrics/releases/download/v0.3.0/plugin.jar \
-  --sha256 a8f961815bd6ecdd3c27d19eb1b1763f85207b7bf86265014ffc84529d96582e
+./flixw plugin install metrics 0.6.0 \
+  https://github.com/wstein/flixw-metrics/releases/download/v0.6.0/plugin.jar \
+  --sha256 ca608b6d6765280a0dd799224ba8a1c0a4fb5bdc7f13b91928133229fc5c385a
 ```
 
 ```sh
 ./flixw metrics report --format md
 ./flixw metrics report --format json --view findings --severity warning
 ```
+
+**Compatibility.** The plugin reads the compiler's internal AST, so each plugin
+release lists the Flix releases it was verified against. Metrics 0.6.0 lists
+Flix up to 0.77.0 and does not support the 0.80.0 compiler this template pins:
+`./flixw metrics` then prints `the pinned compiler has no supported engine API`
+and exits 0 without a report. Until a plugin release lists 0.80.0 (see the
+[plugin's Supported compilers table](https://github.com/wstein/flixw-metrics#supported-compilers)),
+the metrics commands below produce no report here; to use them, pin a listed
+compiler with `./flixw pin 0.77.0` (and the matching `flix` floor in `flix.toml`).
 
 It is third-party, unaffiliated code that runs as you — see
 [flixw-metrics' own Safety section](https://github.com/wstein/flixw-metrics#safety)
