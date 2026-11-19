@@ -1,8 +1,8 @@
 name: Docs
 
-# `./flixw doc` renders this project and the standard library it was built
-# against, so the output matches the pinned compiler exactly rather than
-# whatever api.flix.dev currently serves.
+# `./flixw doc` renders this project with the compiler it pins, so the output
+# matches that compiler exactly rather than whatever api.flix.dev currently
+# serves.
 #
 # The documentation is built on every push to the default branch, which also
 # keeps `doc` itself from breaking unnoticed. Publishing is separate and
@@ -57,61 +57,35 @@ jobs:
       - name: Generate
         run: ./flixw doc
 
-      # `flix doc` renders the whole standard library alongside this project --
-      # 300-odd pages whose index.html is the stdlib's own Prelude -- and has no
-      # option to narrow that down: --Xlib decides what is *compiled*, and
-      # without the library nothing compiles at all. So the narrowing happens
-      # here, and only this project's pages are published.
+      # Since Flix 0.80, `flix doc` writes only this project: a page per module,
+      # a `Source` page per file (`src.*.src.html`) that the definitions link
+      # to relatively, and the assets. Nothing has to be filtered or rewritten
+      # any more; what is left to do is to put a landing page in front and to
+      # refuse to publish anything that is broken.
       - name: Assemble the site
         run: |
           set -euo pipefail
 
-          # Which pages are this project's is not guessed from a module name
-          # that a copy of this template will rename. Every definition gets a
-          # "Source" link, and for this project's definitions that link carries
-          # the absolute path of the file inside this workspace; a standard
-          # library page never does.
-          matched=$(grep -lF "$PWD/src/" build/doc/*.html | xargs -n1 basename | sort)
+          # A module page is every page that is not `index.html`, the 404 page
+          # or a source page. `index.html` is the Prelude page: it holds `main`
+          # and the tests, which Flix requires in the root namespace, and the
+          # landing page generated below takes that filename.
+          pages=$(cd build/doc && ls -1 *.html | grep -vE '^(index|404)\.html$|\.src\.html$' || true)
 
-          # index.html always matches, and is never wanted: it is the standard
-          # library's Prelude page, and `main` is folded into it because Flix
-          # requires the entry point at the root namespace. Publishing 26
-          # library definitions in order to document one `main` is not a trade
-          # worth making, and the landing page generated below takes that
-          # filename anyway.
-          pages=$(printf '%s\n' "$matched" | grep -vx 'index.html' || true)
-
-          # Fail closed. If the source-link format ever changes upstream this
+          # Fail closed. If the layout of the output ever changes upstream this
           # finds nothing, and publishing an empty site quietly would be far
           # worse than stopping here.
           if [ -z "$pages" ]; then
-            echo "::error::no project pages found in build/doc -- the flix doc source-link format may have changed"
+            echo "::error::no module pages found in build/doc -- the flix doc output layout may have changed"
             exit 1
           fi
           echo "publishing: $(echo "$pages" | tr '\n' ' ')"
 
-          rm -rf site && mkdir site
-          cp build/doc/styles.css build/doc/index.js build/doc/favicon.png site/
-          while IFS= read -r p; do cp "build/doc/$p" "site/$p"; done <<<"$pages"
+          rm -rf site
+          cp -R build/doc site
 
-          # Every definition gets a "Source" link, and flix doc builds it by
-          # appending the documented file's path to the standard library's own
-          # base URL on flix/flix. For a library file that is right; for this
-          # project's files it produces a 404 against flix/flix with the build
-          # machine's absolute path embedded in it. Rewrite those into
-          # permalinks at the commit being published.
-          #
-          # The workspace path goes into a regex, so its metacharacters are
-          # escaped -- a dot matching any character would be a silent near-miss.
-          escaped=$(printf '%s' "$PWD" | sed 's|[.[\*^$/]|\\&|g')
-          from="https://github.com/flix/flix/blob/master/main/src/library/$escaped/"
-          to="https://github.com/$GITHUB_REPOSITORY/blob/$GITHUB_SHA/"
-          while IFS= read -r p; do
-            sed "s|$from|$to|g" "site/$p" > "site/$p.tmp" && mv "site/$p.tmp" "site/$p"
-          done <<<"$pages"
-
-          # Fail closed: nothing published may still carry a filesystem path.
-          if grep -lF "$PWD" site/*.html; then
+          # Fail closed: nothing published may carry a filesystem path.
+          if grep -rlF "$PWD" site; then
             echo "::error::a published page still contains a build-machine path"
             exit 1
           fi
@@ -154,9 +128,8 @@ jobs:
           } > site/index.html
 
           # Nothing published may point at a page that was not published. The
-          # module pages here link only to index.html and the assets, but a
-          # richer project can link to a standard library page, and that would
-          # 404 silently without this.
+          # anchor of a link such as `src.Main.src.html#L24` is not part of the
+          # file name.
           broken=0
           for f in site/*.html; do
             while IFS= read -r target; do
@@ -165,7 +138,7 @@ jobs:
                 echo "::error::$(basename "$f") links to $target, which is not published"
                 broken=1
               fi
-            done < <(grep -oE "href='[A-Za-z0-9_.-]+\.html'" "$f" | sed "s/^href='//; s/'$//" | sort -u)
+            done < <(grep -oE "href='[A-Za-z0-9_.-]+\.html(#[^']*)?'" "$f" | sed -E "s/^href='//; s/(#[^']*)?'$//" | sort -u)
           done
           [ "$broken" -eq 0 ]
 
