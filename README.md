@@ -181,24 +181,10 @@ and opens a pull request if all three pass. It never pushes to the default
 branch — the digest in a re-pinned lock is computed by the runner, and that is
 the thing worth reading before merging.
 
-`.github/workflows/docs.yaml` runs `./flixw doc` on every push to `main` and
-publishes this project's own pages to GitHub Pages — for this repository, at
-<https://wstein.github.io/flix-template/>.
-
-`flix doc` renders the whole standard library alongside the project and has no
-option to narrow that: `--Xlib` decides what is *compiled*, and without the
-library nothing compiles at all. Its `index.html` is the stdlib's `Prelude`
-page. So the workflow picks out the project's pages afterwards — by which ones
-carry a source link into the workspace, which no library page does — writes its
-own landing page listing them, and refuses to publish at all if that finds
-nothing. A link check then fails the build if anything published points at a
-page that was not.
-
-One upstream quirk is worked around there too. `flix doc` builds each `Source`
-link by appending the documented file's path to the standard library's own base
-URL on `flix/flix`, which for this project's files yields a 404 with the build
-machine's absolute path inside it. The workflow rewrites those into permalinks
-at the published commit, and fails if any filesystem path survives.
+`.github/workflows/docs.yaml` builds the API documentation with `./flixw doc`
+on pull requests and pushes to `main`. Flix 0.80 generates project documentation
+and linked source pages directly in `build/doc/`. The workflow publishes that
+directory to [GitHub Pages](https://wstein.github.io/flix-template/) on main.
 
 Pages has to be enabled once, under **Settings → Pages** with source
 **GitHub Actions**: the default `GITHUB_TOKEN` cannot create a Pages site even
