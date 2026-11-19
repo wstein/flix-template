@@ -4,8 +4,8 @@
 # about Flix from fighting the layout of a Flix source file: open a formatted
 # file, type in it, save it, and it is still formatted.
 #
-# Rules that require parsing Flix — spacing, wrapping, alignment — are left to
-# `flix format`, which is the authority on them.
+# Rules that require parsing Flix, such as spacing and wrapping, are left to
+# the project formatter.
 
 root = true
 

@@ -8,7 +8,6 @@
 /// because Flix requires the entry point at the root.
 ///
 mod Hello {
-
     ///
     /// Returns the greeting for `name`.
     ///
@@ -17,11 +16,9 @@ mod Hello {
     /// its result.
     ///
     pub def greeting(name: String): String = "Hello, ${name}!"
-
 }
 
 ///
 /// The main entry point.
 ///
-def main(): Unit \ IO =
-    println(Hello.greeting("World"))
+def main(): Unit \ IO = println(Hello.greeting("World"))
