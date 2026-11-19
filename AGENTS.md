@@ -42,7 +42,7 @@ The wrapper adds verbs of its own, ahead of the compiler's:
 
 - `src/` — sources; `src/Main.flix` holds `main`
 - `test/` — `@Test` functions
-- `flix.toml` — package metadata, dependencies, and the *lowest* Flix version
+- `flix.toml` — the package version, dependencies, and the *lowest* Flix version
   this project accepts
 - `.flixw/lock.toml` — the exact compiler and its digest. `flix.toml` states a
   floor; this states the pin. Both are committed, and `validate` fails when
