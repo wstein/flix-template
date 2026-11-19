@@ -65,7 +65,7 @@ The wrapper adds verbs of its own, ahead of the compiler's:
 │   │   ├── update-flix.yaml      weekly: re-pin the compiler, open a pull request
 │   │   └── docs.yaml             build the API docs, publish them to Pages
 │   └── dependabot.yml            keeps the workflows' pinned action digests current
-├── flix.toml                     package metadata and the lowest Flix version accepted
+├── flix.toml                     the package version and the lowest Flix version accepted
 ├── flixw                         the POSIX shim
 ├── flixw.cmd                     the cmd.exe trampoline
 ├── AGENTS.md                     instructions for coding agents; CLAUDE.md and
@@ -207,15 +207,22 @@ npm ci
 npm run format:check
 ```
 
-The npm lockfile pins Prettier and the prebuilt Flix plugin. The formatter
-tracks the Flix 0.80 grammar and the template files have also been tested
-against the compiler pinned by `flixw`. When updating either version, run
-both the format check and `./flixw test`.
+Formatting is done by Prettier with the Flix plugin
+([`prettier-plugin-flix`](https://github.com/wstein/prettier-plugin-flix)); it
+supersedes the `flixw-fmt` plugin, which this template does not use. To rewrite
+the files instead of checking them, run
+`npx prettier --write "src/**/*.flix" "test/**/*.flix"`.
+
+The npm lockfile pins Prettier and the prebuilt plugin. The plugin tracks the
+Flix 0.80 grammar, which is also the compiler `flixw` pins here. When updating
+either version, run both the format check and `./flixw test`.
 
 ## After you template this
 
-1. `flix.toml` — set `name`, `description`, `version` and `authors`. The package
-   name is yours to choose; nothing requires it to match the repository name.
+1. `flix.toml` — set `version`, and `repository` if you publish the package.
+   Flix 0.80 accepts only `version`, `repository` and `flix` in its `[package]`
+   table, so the project's name, description and authors live in this README
+   and in `LICENSE`, not in the manifest.
 2. `LICENSE` — replace the copyright line, or the whole license.
 3. `src/` and `test/` — replace the greeting with your own code, minding
    [Naming what you add](#naming-what-you-add).
