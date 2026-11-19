@@ -137,7 +137,7 @@ build is missing, `./flixw metrics` prints the same pinned command.
 release lists the Flix releases it was verified against. Metrics 0.6.0 lists
 Flix up to 0.77.0 and does not support the 0.80.0 compiler this template pins:
 `./flixw metrics` then prints `the pinned compiler has no supported engine API`
-and exits 0 without a report. Until a plugin release lists 0.80.0 (see the
+and exits with status 2 without a report. Until a plugin release lists 0.80.0 (see the
 [plugin's Supported compilers table](https://github.com/wstein/flixw-metrics#supported-compilers)),
 the metrics commands below produce no report here; to use them, pin a listed
 compiler with `./flixw pin 0.77.0` (and the matching `flix` floor in `flix.toml`).
