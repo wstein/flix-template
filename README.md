@@ -185,20 +185,13 @@ the thing worth reading before merging.
 publishes this project's own pages to GitHub Pages — for this repository, at
 <https://wstein.github.io/flix-template/>.
 
-`flix doc` renders the whole standard library alongside the project and has no
-option to narrow that: `--Xlib` decides what is *compiled*, and without the
-library nothing compiles at all. Its `index.html` is the stdlib's `Prelude`
-page. So the workflow picks out the project's pages afterwards — by which ones
-carry a source link into the workspace, which no library page does — writes its
-own landing page listing them, and refuses to publish at all if that finds
-nothing. A link check then fails the build if anything published points at a
-page that was not.
-
-One upstream quirk is worked around there too. `flix doc` builds each `Source`
-link by appending the documented file's path to the standard library's own base
-URL on `flix/flix`, which for this project's files yields a 404 with the build
-machine's absolute path inside it. The workflow rewrites those into permalinks
-at the published commit, and fails if any filesystem path survives.
+Since Flix 0.80, `flix doc` writes only this project: a page per module, a
+`Source` page per file that the definitions link to relatively, and the assets.
+Its `index.html` is the `Prelude` page, which holds `main` and the tests. So the
+workflow publishes the output as it is, replaces `index.html` with a landing
+page that lists the modules, and refuses to publish at all if no module page is
+found, if any filesystem path survives in the output, or if a published page
+links to a page that was not published.
 
 Pages has to be enabled once, under **Settings → Pages** with source
 **GitHub Actions**: the default `GITHUB_TOKEN` cannot create a Pages site even

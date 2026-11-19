@@ -17,8 +17,7 @@ different version than this project pins. On Windows use
 - `./flixw build` — compile to `build/class`
 - `npm run format:check` (or `./flixw task fmt-check`) — check the formatting of Flix files under `src/` and `test/`
 - `./flixw task fmt` — rewrite them with Prettier; not `./flixw format`, which is the compiler's own formatter
-- `./flixw doc` — write API documentation for the standard library and this
-  project to `build/doc/`
+- `./flixw doc` — write API documentation for this project to `build/doc/`
 - `./flixw metrics report --format md` — review-ready code metrics and findings
 - `./flixw metrics report --format json --view findings --severity warning` —
   compact, actionable input for an agent; use `--view summary` for a quick
